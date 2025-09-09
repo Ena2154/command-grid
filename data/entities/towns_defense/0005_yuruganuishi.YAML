@@ -1,0 +1,40 @@
+- エンティティID: 0003
+- エンティティ名: 《揺るがぬ意思》
+- レアリティ: R
+- テーマ: 町の防衛戦
+- エンティティ種別: s
+- 属性: [兵士]
+- 画像パス: "../assets/images/entities/0003.png"
+
+- 効果リスト:
+  - # --- 効果1 (基本効果) ---
+    # 効果概要: 味方の兵士1体を次の自分のターン開始まで効果破壊から守る
+    トリガー関数: on_play
+    アクター関数: 
+      function_name: "apply_temporary_effect"
+      params: { target: "selected_target", effect: "effect_immunity", duration: "until_next_turn_start" }
+    対象選択: 
+      target_type: "entity"
+      owner: "self"
+      location: "field"
+      attribute: "Soldier"
+      count: 1
+    効果テキスト: "自分のフィールドの「兵士」属性のエンティティ1体を対象とする。次の自分のターンが開始するまで、そのエンティティは相手の効果によっては破壊されない。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 0, 制限: 15, 除去: 0, 回復: 0, 繋ぎ: 15, 圧力: 30 }
+
+  - # --- 効果2 (追加効果) ---
+    # 効果概要: 兵士が多く隣接していれば手札を補充
+    トリガー関数: on_play
+    アクター関数: 
+      function_name: "replenish_card_if_condition_met"
+      params: { 
+        condition: "check_soldier_adjacency(threshold=10)",
+        count: 1 
+      }
+    対象選択: null
+    効果テキスト: "さらに、自分のフィールドにいる「兵士」属性のエンティティが、他の味方の「兵士」属性エンティティに10マス以上隣接している場合、カードを1枚補充する。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 0, 制限: 0, 除去: 0, 回復: 0, 繋ぎ: 25, 圧力: 0 }
+
+- フレーバーテキスト: "この一歩は、決して譲れない。仲間がいるなら、なおのこと。"

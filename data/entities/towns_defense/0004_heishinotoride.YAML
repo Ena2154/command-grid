@@ -1,0 +1,49 @@
+- エンティティID: 0004
+- エンティティ名: 《兵士の砦》
+- レアリティ: R
+- テーマ: 町の防衛戦
+- エンティティ種別: B
+- 属性: [フィールド, 兵士]
+- 画像パス: "../assets/images/entities/0004.png"
+
+- 効果リスト:
+  - # --- 効果1 ---
+    # 効果概要: 他エンティティを上に配置できる。配置された状態を「内包」と呼ぶ
+    トリガー関数: is_always_active
+    アクター関数: 
+      function_name: enable_stacking
+      params: { max_size: 16 }
+    対象選択: null
+    効果テキスト: "【常時】このエンティティの上には、他のエンティティを（サイズ合計が16以下になるように）配置できる。この効果で配置されたエンティティは『内包』されている状態になる。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 0, 制限: 0, 除去: 0, 回復: 0, 繋ぎ: 5, 圧力: 5 }
+
+  - # --- 効果2 ---
+    # 効果概要: 内包されている兵士をスペル効果の対象から守る
+    トリガー関数: is_always_active
+    アクター関数: 
+      function_name: grant_conditional_targeting_immunity
+      params: { condition: "is_contained_by_self", target_attribute: "Soldier", immunity_from: "spell" }
+    対象選択: null
+    効果テキスト: "【常時】このエンティティに『内包』されている「兵士」属性のエンティティは、相手の`s`（スペル）エンティティの効果の対象にならない。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 0, 制限: 20, 除去: 0, 回復: 0, 繋ぎ: 10, 圧力: 30 }
+
+  - # --- 効果3 (改訂案) ---
+    # 効果概要: 内包されているlサイズの兵士をフェーズ終了時に増殖させる
+    トリガー関数: on_phase_end
+    アクター関数: 
+      function_name: proliferate_contained_entity
+      params: { filter_attribute: "Soldier", filter_type: "l", count: 1 }
+    対象選択: # 増殖させるエンティティをプレイヤーが選ぶ
+      target_type: "entity"
+      owner: "self"
+      location: "contained_by_self" # 内包されているエンティティから選ぶ
+      attribute: "Soldier"
+      type: "l"
+      count: 1
+    効果テキスト: "【フェーズ終了時】このエンティティに『内包』されている自分の「兵士」属性の`l`エンティティ1体を選び、そのエンティティを増殖させる。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 0, 制限: 0, 除去: 0, 回復: 0, 繋ぎ: 40, 圧力: 5 }
+
+- フレーバーテキスト: "壁は兵士を守り、兵士は壁から生まれる。それが砦だ。"

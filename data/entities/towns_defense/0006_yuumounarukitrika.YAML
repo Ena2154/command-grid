@@ -1,0 +1,95 @@
+- エンティティID: 0006
+- エンティティ名: 《勇猛なるキリカ》
+- レアリティ: UR
+- テーマ: 町の防衛戦
+- エンティティ種別: L
+- 属性: [兵士, 兵器, 機械]
+- 画像パス: "../assets/images/entities/0006.png"
+
+- 効果リスト:
+  - # --- 効果1: 常時能力 ---
+    # 効果概要: 破壊されない
+    トリガー関数: is_always_active
+    アクター関数: 
+      function_name: grant_effect_immunity
+      params: { target: "self" }
+    対象選択: null
+    効果テキスト: "【常時】このエンティティは相手の効果によっては破壊されない。"
+    COMパラメータ:
+      役割評価値: { 圧力: 100 } # 非常に高い除去耐性
+
+  - # --- 効果2: 召喚時選択効果 ---
+    # 効果概要: 召喚時に3つの効果から1つを選んで発動
+    トリガー関数: on_summon
+    アクター関数: 
+      function_name: "present_choice"
+      params: { choices: ["effect_0006_A", "effect_0006_B", "effect_0006_C"] }
+    対象選択: null
+    効果テキスト: "【召喚時】以下の効果から1つを選んで発動する。"
+    COMパラメータ:
+      役割評価値: { } # 評価は個々の選択肢で行う
+
+  - # --- 効果2-A: 制圧 ---
+    # 効果概要: 相手の盤面を破壊
+    トリガー関数: on_choice_selected(choice_id="effect_0006_A")
+    アクター関数: 
+      function_name: destroy_multiple_targets
+      params: { total_size: 16 }
+    対象選択: 
+      target_type: "entity"
+      owner: "opponent"
+      location: "field"
+      count: "any" # プレイヤーがサイズ合計16になるまで複数選択
+    効果テキスト: "・【制圧】：相手フィールドのエンティティを（サイズ合計がB(4x4)になるまで）好きなように選んで破壊する。"
+    COMパラメータ:
+      役割評価値: { 除去: 120, 圧力: 50 }
+
+  - # --- 効果2-B: 再起 ---
+    # 効果概要: 墓地からリソースを回復
+    トリガー関数: on_choice_selected(choice_id="effect_0006_B")
+    アクター関数: 
+      function_name: recover_from_graveyard
+      params: { count: 3 }
+    対象選択: 
+      target_type: "entity"
+      owner: "self"
+      location: "graveyard"
+      count: 3
+    効果テキスト: "・【再起】：自分の墓地から好きなエンティティを3枚まで手札に加える。"
+    COMパラメータ:
+      役割評価値: { 繋ぎ: 100 }
+
+  - # --- 効果2-C: 宣告 ---
+    # 効果概要: 相手のHPを強制的に-10にする
+    トリガー関数: on_choice_selected(choice_id="effect_0006_C")
+    アクター関数: 
+      function_name: set_hp
+      params: { target: "opponent", value: -10 }
+    対象選択: null
+    効果テキスト: "・【宣告】：相手の現在のHPに関わらず、相手のHPを「-10」にする。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 150, 制限: 50 } # 「疲弊」状態に叩き込む
+
+  - # --- 効果3: 依存能力 (兵士) ---
+    # 効果概要: 味方と連携して回復と反撃
+    トリガー関数: on_turn_end(condition="enigma_is('Soldier')")
+    アクター関数: 
+      function_name: heal_and_damage_by_adjacency
+      params: {}
+    対象選択: null
+    効果テキスト: "【依存】(兵士のエニグマ):【フェーズ終了時】このエンティティに隣接する味方エンティティが占めるマスの合計数ぶん自分のHPを回復し、隣接する敵エンティティのサイズ(面積)の合計数ぶん相手にダメージを与える。"
+    COMパラメータ:
+      役割評価値: { 攻撃: 80, 回復: 80, 圧力: 40 }
+
+  - # --- 効果4: 依存能力 (兵器) ---
+    # 効果概要: 他の兵器の能力使用回数を増やす
+    トリガー関数: is_always_active(condition="enigma_is('Weapon')")
+    アクター関数: 
+      function_name: buff_allied_weapons
+      params: {}
+    対象選択: null
+    効果テキスト: "【依存】(兵器のエニグマ):【常時】自分の他の「兵器」属性エンティティが持つ「1ターンに1度」の効果は、1ターンに2度まで使用できるようになる。"
+    COMパラメータ:
+      役割評価値: { 繋ぎ: 120 }
+
+- フレーバーテキスト: "天が落ちようと、地が割れようと、この一線だけは守り抜いてみせる。"
