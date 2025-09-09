@@ -4,7 +4,7 @@
 - テーマ: 町の防衛戦
 - エンティティ種別: N
 - 属性: [兵士]
-- 画像パス: "../assets/images/entities/0001.png"
+- 画像パス: "../assets/images/entities/000001.png"
 
 - 効果リスト:
   - # --- 効果1 ---
